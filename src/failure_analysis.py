@@ -35,7 +35,7 @@ def analyze_top_failures(input_path="data/processed/kelmarsh_consolidated.csv", 
     agrupado = agrupado.sort_values(by=['Turbine', 'Duration_Hours'], ascending=[True, False])
     
     # 5. Extrair apenas o Top 3 de causas por turbina
-    top_3_por_turbina = agrupado.groupby('Turbine').head(3)
+    top_3_por_turbina = agrupado.groupby('Turbine').head(3).copy()
     
     # Arredondar as horas para ficar apresentável
     top_3_por_turbina['Duration_Hours'] = top_3_por_turbina['Duration_Hours'].round(2)
