@@ -1,0 +1,10 @@
+# Manipulação de Dados e Cálculos
+pandas==2.2.1
+numpy==1.26.4
+
+# Visualização de Dados (Gráficos de Pizza, Barras, etc)
+matplotlib==3.8.3
+seaborn==0.13.2
+
+# Opcional, mas útil caso os dados exijam leitura rápida ou manipulação de datas avançada
+pyarrow==15.0.1
