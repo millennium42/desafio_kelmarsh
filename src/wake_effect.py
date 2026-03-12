@@ -39,7 +39,7 @@ def get_relevant_columns(file_path):
             col_map['Power'] = c
         elif c_clean == 'Pitch angle (°)': 
             col_map['Pitch'] = c
-        elif c_clean in ['Ambient temperature (°C)', 'Temperature (°C)']: 
+        elif c_clean in ['Nacelle ambient temperature (°C)', 'Ambient temperature (°C)', 'Temperature (°C)']: 
             col_map['Temperature'] = c 
             
     return col_map
