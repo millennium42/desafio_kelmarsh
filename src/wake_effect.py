@@ -145,8 +145,8 @@ def process_wake_effect(static_path="data/raw/Kelmarsh_WT_static.csv", output_di
         ordered=True
     )
     
-    curve_t2 = df_filtered.groupby('Wind_Bin', observed=False)['Power_T2'].mean()
-    curve_t3 = df_filtered.groupby('Wind_Bin', observed=False)['Power_T3'].mean()
+    curve_t2 = df_filtered.groupby('Wind_Bin', observed=True)['Power_T2'].mean()
+    curve_t3 = df_filtered.groupby('Wind_Bin', observed=True)['Power_T3'].mean()
     
     os.makedirs(output_dir, exist_ok=True)
     plt.figure(figsize=(12, 6))

@@ -10,6 +10,7 @@ from src.failure_analysis import analyze_top_failures
 from src.visualization import plot_availability_and_losses
 from src.visualization_failures import plot_top_failures
 from src.wake_effect import process_wake_effect
+from src.predictive_maintenance import generate_predictive_dashboard
 
 def main():
     print("="*60)
@@ -23,19 +24,19 @@ def main():
     print(" PARTE 1: DISPONIBILIDADE E FALHAS ")
     print("-" * 40)
     
-    print("\n[PASSO 1/6] A ler e consolidar os dados brutos das turbinas...")
+    print("\n[PASSO 1/7] A ler e consolidar os dados brutos das turbinas...")
     load_and_combine_data()
     
-    print("\n[PASSO 2/6] A calcular disponibilidade temporal e impacto financeiro...")
+    print("\n[PASSO 2/7] A calcular disponibilidade temporal e impacto financeiro...")
     calculate_availability_and_losses()
     
-    print("\n[PASSO 3/6] A identificar as principais causas de falha (indisponibilidade)...")
+    print("\n[PASSO 3/7] A identificar as principais causas de falha (indisponibilidade)...")
     analyze_top_failures()
     
-    print("\n[PASSO 4/6] A gerar gráficos anuais de disponibilidade e perdas financeiras...")
+    print("\n[PASSO 4/7] A gerar gráficos anuais de disponibilidade e perdas financeiras...")
     plot_availability_and_losses()
     
-    print("\n[PASSO 5/6] A gerar o painel de criticidade (Top 3 Falhas)...")
+    print("\n[PASSO 5/7] A gerar o painel de criticidade (Top 3 Falhas)...")
     plot_top_failures()
     
     # =========================================================
@@ -45,8 +46,18 @@ def main():
     print(" PARTE 2: EFEITO DE ESTEIRA (T2 -> T3) ")
     print("-" * 40)
     
-    print("\n[PASSO 6/6] A calcular alinhamento, aplicar filtros e gerar a curva binarizada...")
+    print("\n[PASSO 6/7] A calcular alinhamento, aplicar filtros e gerar a curva binarizada...")
     process_wake_effect()
+    
+    # =========================================================
+    # PARTE 3: Machine Learning e Manutenção Preditiva (EDA)
+    # =========================================================
+    print("\n" + "-"*40)
+    print(" PARTE 3: MACHINE LEARNING E MANUTENÇÃO PREDITIVA ")
+    print("-" * 40)
+    
+    print("\n[PASSO 7/7] A extrair telemetria avançada e gerar Dashboard Preditivo...")
+    generate_predictive_dashboard()
     
     print("\n" + "="*60)
     print(" PIPELINE CONCLUÍDO COM SUCESSO! ".center(60))
