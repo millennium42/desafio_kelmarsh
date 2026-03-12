@@ -14,8 +14,11 @@ def get_wind_direction_angle(static_path):
     lat_destino, lon_destino = math.radians(t2['Latitude']), math.radians(t2['Longitude'])
     
     dlon = lon_destino - lon_origem
-    x = math.sin(dlon) * math.cos(lat_destino)
-    y = math.cos(lat_origem) * math.sin(lat_destino) - (math.sin(lat_origem) * math.cos(lat_destino) * math.cos(dlon))
+    # Calcula-se o cosseno de lat_destino apenas uma vez
+    cos_lat_destino = math.cos(lat_destino)
+
+    x = math.sin(dlon) * cos_lat_destino
+    y = math.cos(lat_origem) * math.sin(lat_destino) - (math.sin(lat_origem) * cos_lat_destino * math.cos(dlon))
     
     bearing_deg = (math.degrees(math.atan2(x, y)) + 360) % 360
     return bearing_deg
@@ -89,23 +92,35 @@ def process_wake_effect(static_path="data/raw/Kelmarsh_WT_static.csv", output_di
         print("!"*60 + "\n")
     
     print("A aplicar filtros de Esteira (±30°), Pitch (<=5°) e Disponibilidade...")
-    limite_inf = angle_t2_t3 - 30
-    limite_sup = angle_t2_t3 + 30
     
-    mask_vento = (df_merged['Wind_Direction_T2'] >= limite_inf) & (df_merged['Wind_Direction_T2'] <= limite_sup)
-    
+    diferenca_angular = (df_merged['Wind_Direction_T2'] - angle_t2_t3 + 180) % 360 - 180
+    mask_vento = np.abs(diferenca_angular) <= 30
+
     mask_pitch = True
     if 'Pitch_T2' in df_merged.columns and 'Pitch_T3' in df_merged.columns:
         mask_pitch = (df_merged['Pitch_T2'] <= 5) & (df_merged['Pitch_T3'] <= 5)
         
     mask_operacao = (df_merged['Power_T2'] > 0) & (df_merged['Power_T3'] > 0)
     
-    df_filtered = df_merged[mask_vento & mask_pitch & mask_operacao].copy()
+    # Construção dinâmica da query de filtragem
+    query_str = "Power_T2 > 0 and Power_T3 > 0"
     
+    # Só adiciona o filtro de Pitch se as colunas realmente existirem no dataset
+    if 'Pitch_T2' in df_merged.columns and 'Pitch_T3' in df_merged.columns:
+        query_str += " and Pitch_T2 <= 5 and Pitch_T3 <= 5"
+        
+    # Aplica a máscara do vento e a query calculada
+    df_filtered = df_merged[mask_vento].query(query_str).copy()
     print("\nA gerar Curvas de Potência Binarizadas (0.5 m/s)...")
     bins = np.arange(0, 25.5, 0.5)
-    df_filtered['Wind_Bin'] = pd.cut(df_filtered['Wind_Speed_T2'], bins=bins, labels=bins[:-1] + 0.25)
     
+    # No momento de cortar em Bins, garanta ordered=True
+    df_filtered['Wind_Bin'] = pd.cut(
+        df_filtered['Wind_Speed_T2'], 
+        bins=bins, 
+        labels=bins[:-1] + 0.25,
+        ordered=True
+    )
     curve_t2 = df_filtered.groupby('Wind_Bin', observed=False)['Power_T2'].mean()
     curve_t3 = df_filtered.groupby('Wind_Bin', observed=False)['Power_T3'].mean()
     
