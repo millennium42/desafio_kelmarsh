@@ -96,3 +96,33 @@ python src/main.py
 4. Calcula o alinhamento geográfico, aplica a normalização IEC (densidade do ar) e extrai o défice provocado pelo Efeito Esteira (Parte 2).
 5. Extrai a telemetria avançada de vibração e temperatura para gerar o Dashboard Preditivo (Parte 3).
 6. Exporta todos os relatórios visuais (incluindo painéis e curvas binarizadas) para a pasta `output/plots/`.
+
+## 🔍 O que é possível prever com o cabeçalho rico do `Turbine_Data`?
+
+Com as colunas disponíveis no SCADA, já é viável montar um modelo de **predição de falha em horizonte futuro** (ex.: falha em até 24h) cruzando:
+
+1. **Sinais mecânicos** (ex.: `Drive train acceleration`, `Tower Acceleration`, `Rotor speed`)
+2. **Sinais térmicos** (ex.: temperaturas de óleo, estator, rolamentos)
+3. **Sinais elétricos** (ex.: `Grid frequency`, tensão, corrente, fator de potência)
+4. **Sinais de contexto operacional** (ex.: `Power`, `Wind speed`, `Blade angle`, `Nacelle position`)
+5. **Eventos reais de falha/manutenção** do `Status_Kelmarsh_*` (ex.: `Forced outage`, `Scheduled Maintenance`) para gerar o alvo supervisionado.
+
+A forma recomendada é definir o target como: **"ocorrerá falha nas próximas N horas?"**.
+
+## 🤖 Novo módulo baseline de previsão de falhas
+
+Foi adicionado o módulo `src/predictive_failure_model.py`, que implementa:
+
+- leitura incremental de telemetria relevante por turbina;
+- leitura dos eventos de falha/manutenção no dataset de status;
+- geração de target supervisionado de horizonte futuro (`target_failure_in_horizon`);
+- engenharia de atributos com deltas e janelas móveis por turbina;
+- treino baseline com `RandomForestClassifier` + avaliação (`classification_report`, ROC-AUC, PR-AUC).
+
+Execução direta:
+
+```bash
+python src/predictive_failure_model.py
+```
+
+Ou pelo pipeline completo (`src/main.py`), no novo passo 8.
