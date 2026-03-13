@@ -8,3 +8,5 @@ seaborn==0.13.2
 
 # Opcional, mas útil caso os dados exijam leitura rápida ou manipulação de datas avançada
 pyarrow==15.0.1
+# Modelagem preditiva
+scikit-learn==1.5.1
